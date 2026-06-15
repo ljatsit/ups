@@ -3,258 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ເຄື່ອງມືສ້າງ QR CODE</title>
-
+    <title>ເຄື່ອງມືສ້າງ QR Code ມືຖື</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- QR CODE -->
+    <!-- QRCode.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-    <!-- ZIP -->
+    <!-- JSZip for ZIP compression -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- FileSaver.js to download files -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
+<body class="bg-gray-50 min-h-screen p-4 pb-12">
 
-<body class="bg-gray-50 min-h-screen p-4 font-sans">
+    <div class="max-w-md mx-auto bg-white p-6 rounded-3xl shadow-xl">
+        <a href="index.html" class="text-blue-600 font-bold mb-4 inline-flex items-center gap-1 hover:underline">
+            <span>&larr;</span> ກັບໜ້າຫຼັກ
+        </a>
+        <h1 class="text-2xl font-bold mb-6 text-gray-800">ສ້າງ QR Code </h1>
 
-    <div class="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-6">
+        <!-- Custom Notification Message Area -->
+        <div id="alertBox" class="hidden mb-4 p-4 rounded-2xl bg-red-50 text-red-700 border border-red-100 text-sm"></div>
 
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-4">
-            <a href="index.html"
-               class="text-sm bg-gray-200 px-3 py-1 rounded-lg hover:bg-gray-300 transition">
-               ← ກັບຄືນ
-            </a>
+        <div class="space-y-4">
+            <textarea id="inputText" class="w-full p-4 border-2 border-gray-200 rounded-2xl focus:border-blue-500 outline-none text-base" rows="4" placeholder="ໃສ່ຂໍ້ຄວາມ ຫຼື URL (ແຍກແຕ່ລະອັນດ້ວຍການຂຶ້ນແຖວໃໝ່)"></textarea>
+            
+            <div class="p-4 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50">
+                <label class="block text-sm font-medium text-gray-700 mb-2">ເລືອກຮູບພາບກາງ QR Code (Logo):</label>
+                <input type="file" id="imageInput" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+            </div>
+            
+            <div class="flex items-center gap-4 bg-gray-100 p-3 rounded-2xl">
+                <input type="color" id="colorPicker" value="#000000" class="w-12 h-12 rounded-xl cursor-pointer border-0">
+                <input type="text" id="colorCode" value="#000000" class="flex-1 bg-transparent font-mono text-lg uppercase outline-none">
+            </div>
 
-            <h1 class="text-lg font-bold text-gray-800">
-                ສ້າງ QR CODE
-            </h1>
-
-            <div id="timerDisplay"
-                 class="text-xs text-red-500 font-mono bg-red-50 px-2 py-1 rounded border border-red-200">
-                 10:00
+            <button onclick="generateQR()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-blue-700 transition transform active:scale-95">
+                ສ້າງ QR Code
+            </button>
+            
+            <!-- Download Button Grid -->
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="downloadAllAsZip()" class="hidden bg-emerald-600 text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-emerald-700 transition text-sm flex items-center justify-center gap-1" id="downloadZipBtn">
+                    📥 ດາວໂຫຼດ ZIP
+                </button>
+                <button onclick="window.print()" class="hidden bg-gray-600 text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-gray-700 transition text-sm flex items-center justify-center gap-1" id="printBtn">
+                    🖨️ ພິມເປັນ PDF
+                </button>
             </div>
         </div>
 
-        <p class="text-xs text-gray-500 mb-4">
-            ຖ້າບໍ່ມີການເຄື່ອນໄຫວພາຍໃນ 10ນາທີ ລະບົບຈະປິດອັດຕາໂນມັດ
-        </p>
-
-        <!-- INPUT -->
-        <textarea id="inputArea"
-                  rows="6"
-                  class="w-full border-2 border-gray-200 rounded-xl p-3 mb-4 focus:border-blue-500 outline-none uppercase"
-                  placeholder="ໃສ່ຂໍ້ມູນ..."
-                  oninput="this.value = this.value.toUpperCase(); resetTimer();"></textarea>
-
-        <!-- BUTTON -->
-        <div class="flex gap-2">
-            <button onclick="generateQRCodes()"
-                    class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold active:scale-95 transition">
-                    ສ້າງ QR CODE
-            </button>
-
-            <button id="downloadBtn"
-                    onclick="confirmAndDownload()"
-                    class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold active:scale-95 transition hidden">
-                    ດາວໂຫຼດ .ZIP
-            </button>
+        <!-- Processing Indicator -->
+        <div id="loader" class="hidden mt-6 text-center text-blue-600 font-semibold animate-pulse">
+            กำลังສ້າງ ແລະ ປະມວນຜົນຮູບພາບ...
         </div>
 
-        <!-- STATUS -->
-        <div id="status"
-             class="mt-4 text-sm text-center text-gray-600 font-bold uppercase italic">
-        </div>
-
-        <!-- QR CONTAINER -->
-        <div id="qrContainer"
-             class="mt-6 flex flex-col items-center gap-6">
-        </div>
-
+        <div id="qrContainer" class="mt-8 grid grid-cols-1 gap-6"></div>
     </div>
 
-<script>
+    <script>
+        const colorPicker = document.getElementById('colorPicker');
+        const colorCode = document.getElementById('colorCode');
+        const alertBox = document.getElementById('alertBox');
+        const loader = document.getElementById('loader');
 
-    let currentQRCodes = [];
-    let timeLeft = 600;
-
-    // TIMER
-    const timerInterval = setInterval(() => {
-
-        timeLeft--;
-
-        const mins = Math.floor(timeLeft / 60);
-        const secs = timeLeft % 60;
-
-        document.getElementById('timerDisplay').innerText =
-            `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            window.close();
-        }
-
-    }, 1000);
-
-    function resetTimer() {
-        timeLeft = 600;
-    }
-
-    // GENERATE QR
-    function generateQRCodes() {
-
-        resetTimer();
-
-        const container = document.getElementById('qrContainer');
-        const status = document.getElementById('status');
-
-        const lines = document.getElementById('inputArea')
-            .value
-            .split('\n')
-            .filter(line => line.trim() !== '')
-            .slice(0, 50);
-
-        container.innerHTML = '';
-        currentQRCodes = [];
-
-        lines.forEach((text, index) => {
-
-            // WRAPPER
-            const wrapper = document.createElement('div');
-            wrapper.className = "bg-white p-4 rounded-xl shadow flex flex-col items-center gap-2";
-
-            // QR BOX
-            const qrDiv = document.createElement('div');
-            qrDiv.id = `qr-${index}`;
-
-            wrapper.appendChild(qrDiv);
-
-            // TEXT
-            const label = document.createElement('div');
-            label.className = "text-sm font-bold text-gray-700 break-all text-center";
-            label.innerText = text;
-
-            wrapper.appendChild(label);
-
-            container.appendChild(wrapper);
-
-            // CREATE QR
-            new QRCode(qrDiv, {
-                text: text,
-                width: 200,
-                height: 200,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-
-            currentQRCodes.push({
-                text,
-                qrDiv
-            });
-
+        // Sync color input with code input
+        colorPicker.addEventListener('input', (e) => colorCode.value = e.target.value);
+        colorCode.addEventListener('input', (e) => {
+            if (e.target.value.match(/^#[0-9A-F]{6}$/i)) {
+                colorPicker.value = e.target.value;
+            }
         });
 
-        if (currentQRCodes.length > 0) {
-
-            document.getElementById('downloadBtn')
-                .classList
-                .remove('hidden');
-
-            status.innerText =
-                `ສ້າງ QR CODE ສຳເລັດ ${currentQRCodes.length} ລາຍການ`;
+        function showAlert(msg) {
+            alertBox.textContent = msg;
+            alertBox.classList.remove('hidden');
+            setTimeout(() => {
+                alertBox.classList.add('hidden');
+            }, 5000);
         }
-    }
 
-    // CONFIRM
-    function confirmAndDownload() {
+        // Storage for temporary final canvas/images for ZIP download
+        let qrDataList = [];
 
-        if (confirm("ຕ້ອງການດາວໂຫຼດ QR CODE ທັງໝົດ (.ZIP) ທີ່ມີຊື່ກຳກັບ ຫຼືບໍ່?")) {
-            downloadAll();
-        }
-    }
+        function generateQR() {
+            const container = document.getElementById('qrContainer');
+            const textLines = document.getElementById('inputText').value.split('\n').filter(l => l.trim() !== '');
+            const imageInput = document.getElementById('imageInput');
+            
+            container.innerHTML = '';
+            qrDataList = []; // Reset list
+            document.getElementById('downloadZipBtn').classList.add('hidden');
+            document.getElementById('printBtn').classList.add('hidden');
+            
+            if (textLines.length === 0) {
+                showAlert('ກະລຸນາປ້ອນຂໍ້ມູນກ່ອນ!');
+                return;
+            }
+            
+            if (textLines.length > 100) {
+                showAlert('ຈຳກັດສູງສຸດ 100 ລາຍການ');
+                return;
+            }
 
-    // DOWNLOAD ZIP WITH TEXT LABELS
-    async function downloadAll() {
+            loader.classList.remove('hidden');
 
-        resetTimer();
-
-        document.getElementById('status').innerText =
-            "ກຳລັງກະກຽມໄຟລ໌...";
-
-        const zip = new JSZip();
-
-        for (let i = 0; i < currentQRCodes.length; i++) {
-
-            const item = currentQRCodes[i];
-            const img = item.qrDiv.querySelector('img');
-
-            if (img) {
-                // 1. ສ້າງ Canvas ຂຶ້ນມາເພື່ອແຕ້ມຮູບ QR ແລະ ຂໍ້ຄວາມໃສ່ຮ່ວມກັນ
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                
-                const qrSize = 200; // ຂະໜາດ QR Code
-                const padding = 20; // ໄລຍະຫ່າງຂອບ
-                const textSpace = 50; // ພື້ນທີ່ສຳລັບຂຽນຊື່/ຂໍ້ຄວາມ
-                
-                canvas.width = qrSize + (padding * 2); // ຄວາມກວ້າງທັງໝົດ 240px
-                canvas.height = qrSize + padding + textSpace; // ຄວາມສູງທັງໝົດ 270px
-
-                // 2. ຖົມພື້ນຫຼັງດ້ວຍສີຂາວ
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                // 3. ແຕ້ມຮູບ QR Code ໃສ່ Canvas
-                await new Promise((resolve) => {
-                    const tempImg = new Image();
-                    tempImg.onload = () => {
-                        ctx.drawImage(tempImg, padding, padding, qrSize, qrSize);
-                        resolve();
+            const hasLogo = imageInput.files && imageInput.files[0];
+            
+            if (hasLogo) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const logoImg = new Image();
+                    logoImg.src = e.target.result;
+                    logoImg.onload = function() {
+                        processQRCodes(textLines, logoImg);
                     };
-                    tempImg.src = img.src;
-                });
-
-                // 4. ຂຽນຂໍ້ຄວາມ/ຊື່ ໃສ່ກ້ອງ QR Code
-                ctx.fillStyle = '#374151'; // ໃຊ້ສີເທົາເຂັ້ມ (gray-700)
-                ctx.font = 'bold 14px sans-serif'; // ກຳນົດ Font ແລະ ຂະໜາດ
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'top';
-                
-                const labelText = item.text;
-                const maxTextWidth = qrSize; // ກຳນົດບໍ່ໃຫ້ຂໍ້ຄວາມກວ້າງກວ່າຮູບ QR
-                const textY = qrSize + padding + 10; // ຕຳແໜ່ງແນວຕັ້ງຂອງຂໍ້ຄວາມ
-
-                // ປັບຂະໜາດ Font ໃຫ້ໜ້ອຍລົງ ຖ້າຂໍ້ຄວາມຍາວເກີນໄປ
-                if (ctx.measureText(labelText).width > maxTextWidth) {
-                    ctx.font = 'bold 11px sans-serif';
-                }
-                
-                ctx.fillText(labelText, canvas.width / 2, textY, maxTextWidth);
-
-                // 5. ແປງ Canvas ໃຫ້ເປັນ Blob (ຮູບພາບ PNG)
-                const blob = await new Promise((resolve) => {
-                    canvas.toBlob((b) => resolve(b), 'image/png');
-                });
-
-                // 6. ຕັ້ງຊື່ໄຟລ໌ໂດຍເອົາຊື່ QR Code ມາໃສ່ນຳ (ຕັດຕົວອັກສອນພິເສດອອກເພື່ອບໍ່ໃຫ້ໄຟລ໌ມີບັນຫາ)
-                const sanitizedText = labelText.replace(/[/\\?%*:|"<>]/g, '-').substring(0, 30);
-                zip.file(`QR_${i + 1}_${sanitizedText}.png`, blob);
+                };
+                reader.readAsDataURL(imageInput.files[0]);
+            } else {
+                processQRCodes(textLines, null);
             }
         }
 
-        // 7. ສ້າງໄຟລ໌ ZIP ແລະ ດາວໂຫຼດ
-        const zipBlob = await zip.generateAsync({
-            type: "blob"
-        });
+        function processQRCodes(lines, logoImg) {
+            const container = document.getElementById('qrContainer');
+            let processedCount = 0;
 
-        saveAs(zipBlob, "QRCODES.zip");
+            lines.forEach((text, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'flex flex-col items-center bg-white p-6 rounded-2xl border border-gray-100 shadow-md relative';
+                
+                // Content label for users to see
+                const label = document.createElement('div');
+                label.className = 'text-xs text-gray-500 mb-3 truncate w-full text-center font-mono';
+                label.textContent = text.length > 30 ? text.substring(0, 27) + '...' : text;
+                wrapper.appendChild(label);
 
-        document.getElementById('status').innerText =
-            "ດາວໂຫຼດສຳເລັດ";
-    }
+                // Hidden div to generate the raw QR Code via qrcode.js
+                const tempQrDiv = document.createElement('div');
+                tempQrDiv.style.display = 'none';
+                wrapper.appendChild(tempQrDiv);
 
-</script>
+                // Main visible preview canvas
+                const previewCanvas = document.createElement('canvas');
+                previewCanvas.width = 300;
+                previewCanvas.height = 300;
+                previewCanvas.className = 'max-w-full h-auto rounded-xl';
+                wrapper.appendChild(previewCanvas);
 
+                // Single download button for individual image
+                const singleDownloadBtn = document.createElement('button');
+                singleDownloadBtn.className = 'mt-3 text-sm text-blue-600 font-semibold hover:underline flex items-center gap-1';
+                singleDownloadBtn.innerHTML = '📥 ດາວໂຫຼດຮູບນີ້';
+                wrapper.appendChild(singleDownloadBtn);
+
+                container.appendChild(wrapper);
+
+                // Generate QR Code using library
+                const qrcode = new QRCode(tempQrDiv, {
+                    text: text,
+                    width: 300,
+                    height: 300,
+                    colorDark: colorCode.value,
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+
+                // Wait for the library to draw the image/canvas internally
+                setTimeout(() => {
+                    const qrImg = tempQrDiv.querySelector('img');
+                    const qrCanvas = tempQrDiv.querySelector('canvas');
+                    const ctx = previewCanvas.getContext('2d');
+
+                    const source = qrCanvas || qrImg;
+
+                    if (source) {
+                        // Draw base QR code
+                        ctx.drawImage(source, 0, 0, 300, 300);
+
+                        // If user uploaded a Logo, draw it on top
+                        if (logoImg) {
+                            // *** ແກ້ໄຂຂະໜາດໂລໂກ້ຢູ່ບ່ອນນີ້ (ປັບໃຫ້ນ້ອຍລົງເລັກນ້ອຍ) ***
+                            // ຈາກເດີມ: logoSizeWidth = 70, logoSizeHeight = 50
+                            // ປັບໃໝ່ໃຫ້ເໝາະສົມ: logoSizeWidth = 60, logoSizeHeight = 42 (ຮັກສາອັດຕາສ່ວນ)
+                            const logoSizeWidth = 60; 
+                            const logoSizeHeight = 42; 
+                            const logoX = (300 - logoSizeWidth) / 2;
+                            const logoY = (300 - logoSizeHeight) / 2;
+
+                            // Draw a small white round-rect background card for the logo to stand out
+                            ctx.fillStyle = '#ffffff';
+                            ctx.beginPath();
+                            const padding = 6;
+                            ctx.roundRect(
+                                logoX - padding, 
+                                logoY - padding, 
+                                logoSizeWidth + (padding * 2), 
+                                logoSizeHeight + (padding * 2), 
+                                8
+                            );
+                            ctx.fill();
+
+                            // Draw Logo
+                            ctx.drawImage(logoImg, logoX, logoY, logoSizeWidth, logoSizeHeight);
+                        }
+
+                        // Store canvas data for ZIP export
+                        const finalDataURL = previewCanvas.toDataURL('image/png');
+                        qrDataList.push({
+                            filename: `qrcode_${index + 1}.png`,
+                            dataURL: finalDataURL
+                        });
+
+                        // Set up individual download action
+                        singleDownloadBtn.onclick = function() {
+                            const link = document.createElement('a');
+                            link.download = `qrcode_${index + 1}.png`;
+                            link.href = finalDataURL;
+                            link.click();
+                        };
+                    }
+
+                    processedCount++;
+                    if (processedCount === lines.length) {
+                        loader.classList.add('hidden');
+                        document.getElementById('downloadZipBtn').classList.remove('hidden');
+                        document.getElementById('printBtn').classList.remove('hidden');
+                    }
+                }, 150);
+            });
+        }
+
+        // Feature to download all files zipped together using JSZip
+        function downloadAllAsZip() {
+            if (qrDataList.length === 0) {
+                showAlert('ບໍ່ມີຮູບພາບທີ່ຈະດາວໂຫຼດ');
+                return;
+            }
+
+            const zip = new JSZip();
+            
+            qrDataList.forEach((item) => {
+                // Strip the header "data:image/png;base64," to get pure base64
+                const base64Data = item.dataURL.split(',')[1];
+                zip.file(item.filename, base64Data, { base64: true });
+            });
+
+            zip.generateAsync({ type: 'blob' }).then(function(content) {
+                saveAs(content, 'qrcodes_pack.zip');
+            });
+        }
+    </script>
 </body>
 </html>
