@@ -372,7 +372,7 @@
                 <div class="space-y-4 text-sm">
                     <!-- Textbox สำหรับนำเข้าค่า QR ได้สูงสุดทีละร้อยรายการ -->
                     <div>
-      <textarea id="gen-qr-list" oninput="this.value = this.value.toUpperCase()" rows="5" class="w-full uppercase p-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm" placeholder="UPS-001&#10;UPS-002&#10;UPS-003"></textarea>
+      <textarea id="gen-qr-list" oninput="this.value = this.value.toUpperCase()" rows="5" class="w-full uppercase p-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm" placeholder="FM/IT/UPS-001&#10;FM/IT/UPS-002&#10;FM/IT/UPS-003"></textarea>
                     </div>
 
                     <!-- การปรับแต่งสีพร้อม Color Code Input -->
@@ -443,29 +443,29 @@
             <div class="p-4 space-y-4 text-sm">
                 <!-- 1.1 ข้อมูลที่สแกน -->
                 <div>
-                    <label class="block font-bold text-slate-600 mb-1.5">1.1 <b>ຂໍ້ມູນທີ່ສະແກນ (QR Code)</b></label>
+                    <label class="block font-bold text-slate-600 mb-1.5"><b>QR Code</b></label>
                     <input type="text" id="modal-mv-qrcode" readonly class="w-full uppercase p-3 bg-slate-100 border border-slate-200 rounded-xl text-slate-700 font-semibold focus:outline-none text-sm">
                 </div>
 
                 <!-- 1.2 วันที่สามารถเลือกได้ -->
                 <div>
-                    <label class="block font-bold text-slate-600 mb-1.5">1.2 <b>ວັນທີປະຕິບັດງານ</b></label>
+                    <label class="block font-bold text-slate-600 mb-1.5"><b>ວັນທີ</b></label>
                     <input type="date" id="modal-mv-date" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 transition focus:outline-none text-sm">
                 </div>
 
                 <!-- 1.3 สถานะ พัง เกิดปัญหา สำเร็จ (เริ่มต้น เกิดปัญหา) -->
                 <div>
-                    <label class="block font-bold text-slate-600 mb-1.5">1.3 <b>ສະຖານະຂອງອຸປະກອນ</b></label>
+                    <label class="block font-bold text-slate-600 mb-1.5"><b>ສະຖານະ</b></label>
                     <select id="modal-mv-status" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 transition focus:outline-none font-medium text-sm">
                         <option value="ເກີດບັນຫາ" selected>ເກີດບັນຫາ</option>
                         <option value="ສຳເລັດ">ສຳເລັດ</option>
-                        <option value="ເພ">ເພ</option>
+                        <option value="ເພແລ້ວ">ເພແລ້ວ</option>
                     </select>
                 </div>
 
                 <!-- 1.4 เนื้อหาสามารถใส่ได้หลายบรรทัด -->
                 <div>
-                    <label class="block font-bold text-slate-600 mb-1.5">1.4 <b>ລາຍລະອຽດ / ເນື້ອຫາບັນທຶກ</b></label>
+                    <label class="block font-bold text-slate-600 mb-1.5"><b>ລາຍລະອຽດ / ເນື້ອຫາບັນທຶກ</b></label>
                     <textarea id="modal-mv-detail" rows="3" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 transition focus:outline-none text-sm" placeholder="ພິມລາຍລະອຽດຄວາມເຄື່ອນໄຫວເພີ່ມເຕີມ..."></textarea>
                 </div>
 
@@ -937,7 +937,7 @@ async function togglePageFlashlight(btnId) {
         function openMovementEntryModal(qrcodeValue) {
             document.getElementById('modal-mv-qrcode').value = qrcodeValue.toUpperCase();
             setDefaultDate();
-            document.getElementById('modal-mv-status').value = "เกิดปัญหา";
+            document.getElementById('modal-mv-status').value = "ເກີດບັນຫາ";
             document.getElementById('modal-mv-detail').value = "";
             
             // Re-enable save button just in case
@@ -1066,8 +1066,8 @@ async function togglePageFlashlight(btnId) {
                 showToast("ການເຊື່ອມຕໍ່ຖານຂໍ້ມູນຫຼົ້ມເຫຼວ (ສະແດງຂໍ້ມູນທົດສອບ)", "error");
                 
                 displayMovementTimeline(qrcode, [
-                    { qrcode: qrcode, date: "2026-06-19", status: "เกิดปัญหา", detail: "ໄຟສຳຮອງບໍ່ເຂົ້າ ແບັດເຕີຣີບວມປົກກະຕິ", timestamp: new Date() },
-                    { qrcode: qrcode, date: "2026-05-10", status: "สำเร็จ", detail: "ປ່ຽນກ້ອນແບັດເຕີຣີສຳຮອງໃໝ່ຮຽບຮ้อย", timestamp: new Date() }
+                    { qrcode: qrcode, date: "2026-06-19", status: "ເກີດບັນຫາ", detail: "ໄຟສຳຮອງບໍ່ເຂົ້າ ແບັດເຕີຣີບວມປົກກະຕິ", timestamp: new Date() },
+                    { qrcode: qrcode, date: "2026-05-10", status: "ສຳເລັດ", detail: "ປ່ຽນກ້ອນແບັດເຕີຣີສຳຮອງໃໝ່ຮຽບຮ้อย", timestamp: new Date() }
                 ]);
             } finally {
                 hideLoading();
@@ -1088,14 +1088,14 @@ async function togglePageFlashlight(btnId) {
                 timeline.innerHTML = `<p class="text-sm text-slate-400 italic">ບໍ່ພົບປະຫວັດການເຄື່ອນໄຫວຂອງລະຫັດນີ້</p>`;
             } else {
                 list.forEach(item => {
-                    let statusColor = "bg-rose-100 text-rose-700 border-rose-200";
+                    let statusColor = "bg-orange-100 text-orange-700 border-orange-200";
                     let statusIcon = "fa-circle-exclamation";
                     
-                    if (item.status === "สำเร็จ" || item.status === "สำเร็จ") {
+                    if (item.status === "ສຳເລັດ" || item.status === "ສຳເລັດ") {
                         statusColor = "bg-emerald-100 text-emerald-700 border-emerald-200";
                         statusIcon = "fa-circle-check";
-                    } else if (item.status === "พัง" || item.status === "ເພ") {
-                        statusColor = "bg-slate-100 text-slate-700 border-slate-200";
+                    } else if (item.status === "ເພແລ້ວ" || item.status === "ເພແລ້ວ") {
+                        statusColor = "bg-red-100 text-red-700 border-slate-200";
                         statusIcon = "fa-trash";
                     }
 
