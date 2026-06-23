@@ -549,7 +549,7 @@
                         ປິດໜ້າຕ່າງ
                     </button>
                     <button type="button" id="btn-save-master" onclick="saveMasterData()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold transition shadow-sm text-sm">
-                        <b>ບັນທຶກข้อมูลຫຼັກ</b>
+                        <b>ບັນທຶກ</b>
                     </button>
                 </div>
             </div>
@@ -1234,6 +1234,7 @@ const formattedDate = `${day}/${month}/${year}`;
             if (!qrcode || !dept || !location) {
                 showToast("ກະລຸນາປ້ອນຂໍ້ມູນທີ່ຈຳເປັນໃຫ້ຄົບຖ້ວນ", "error");
                    
+
                 if (saveMasterBtn) {
                     saveMasterBtn.disabled = false;
                     saveMasterBtn.classList.remove('opacity-50', 'cursor-not-allowed');
