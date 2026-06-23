@@ -486,7 +486,7 @@
     <div id="add-data-modal" class="fixed inset-0 bg-slate-950/50 backdrop-blur-xs flex items-center justify-center z-50 hidden p-4">
         <div class="bg-white rounded-2xl w-full max-w-md shadow-xl border border-slate-100 transform transition-transform duration-300 scale-95 overflow-hidden">
             <div class="bg-indigo-600 text-white p-4 flex justify-between items-center">
-                <h3 class="text-base font-bold flex items-center gap-2"><i class="fa-solid fa-server"></i> ເພີ່ມຂໍ້ມູນຫຼັກຂອງອຸປະກອນ (Data)</h3>
+                <h3 class="text-base font-bold flex items-center gap-2"><i class="fa-solid fa-server"></i> ເພີ່ມຂໍ້ມູນຫຼັກ (ups)</h3>
                 <button onclick="closeAddDataModal()" class="text-white/80 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             
@@ -1231,8 +1231,9 @@ const formattedDate = `${day}/${month}/${year}`;
             const detail = document.getElementById('modal-db-detail').value.trim();
             const location = document.getElementById('modal-db-location').value.trim();
 
-            if (!qrcode || !asset || !dept) {
+            if (!qrcode || !dept || !location) {
                 showToast("ກະລຸນາປ້ອນຂໍ້ມູນທີ່ຈຳເປັນໃຫ້ຄົບຖ້ວນ", "error");
+                   
                 if (saveMasterBtn) {
                     saveMasterBtn.disabled = false;
                     saveMasterBtn.classList.remove('opacity-50', 'cursor-not-allowed');
