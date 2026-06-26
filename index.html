@@ -121,7 +121,7 @@
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
                                 <i class="fa-solid fa-keyboard text-sm"></i>
                             </span>
-                            <input type="text" id="manual-qr-input" oninput="this.value = this.value.toUpperCase()" placeholder="ພິມລະຫັດ QR ..." class="w-full uppercase pl-9 pr-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                            <input type="text" id="manual-qr-input" onfocus="prefillUPSPrefix(this)" oninput="this.value = this.value.toUpperCase()" placeholder="ພິມລະຫັດ QR ..." class="w-full uppercase pl-9 pr-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
                         </div>
                         <button onclick="handleManualQREnter()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-xl font-semibold text-sm transition shadow-sm flex items-center gap-1.5">
                             <i class="fa-solid fa-circle-check"></i> ຕົກລົງ
@@ -189,6 +189,7 @@
                         <input
                             type="text"
                             id="movement-qr-input"
+                            onfocus="prefillUPSPrefix(this)"
                             oninput="this.value=this.value.toUpperCase()"
                             placeholder="ພິມລະຫັດ QR ..."
                             class="w-full uppercase pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl"
@@ -262,6 +263,7 @@
     <input
         type="text"
         id="print-qr-input"
+        onfocus="prefillUPSPrefix(this)"
         oninput="this.value=this.value.toUpperCase()"
         placeholder="ພິມລະຫັດ QR ..."
         class="w-full uppercase pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl">
@@ -495,7 +497,7 @@
                 <div>
                     <label class="block font-bold text-slate-600 mb-1">QR Code </label>
                     <div class="relative">
-                        <input type="text" id="modal-db-qrcode" oninput="this.value = this.value.toUpperCase()" placeholder="ລະບຸ ຫຼື ສະແກນລະຫັດ QR..." class="w-full uppercase pl-3 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm">
+                        <input type="text" id="modal-db-qrcode" onfocus="prefillUPSPrefix(this)" oninput="this.value = this.value.toUpperCase()" placeholder="ລະບຸ ຫຼື ສະແກນລະຫັດ QR..." class="w-full uppercase pl-3 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm">
                         <button onclick="startSpecificScanner('modal-db-qrcode')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-indigo-600 transition" title="ສະແກນກ້ອງ (ຮູບຈະຕູລັດ)">
                             <i class="fa-solid fa-camera text-base"></i>
                         </button>
@@ -1776,6 +1778,17 @@ function headerBack(){
 
 }
 
+
+function prefillUPSPrefix(el) {
+    const prefix = "FM/IT/UPS-";
+    if (!el.value || el.value.trim() === "") {
+        el.value = prefix;
+    }
+    const len = el.value.length;
+    requestAnimationFrame(() => {
+        try { el.setSelectionRange(len, len); } catch (e) {}
+    });
+}
       
     </script>
 </body>
